@@ -8,7 +8,7 @@ class SeasonStats:
         self.game_stats: List[GameStats] = []
 
     def count_player_stats(self):
-        atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, error = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, error, strike_out = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         steel_success, steel_failed = 0, 0
         for game_stats in self.game_stats:
             for br in game_stats.batting_results:
@@ -32,19 +32,21 @@ class SeasonStats:
                     gisei += 1
                 if br.result == "併殺":
                     getsu += 1
+                if br.result == "三振":
+                    strike_out += 1
             rbi += game_stats.rbi
             run += game_stats.run
             steel_success += game_stats.steel_success
             steel_failed += game_stats.steel_failed
             error += game_stats.error
-        return atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, steel_success, steel_failed, error
+        return atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, steel_success, steel_failed, error, strike_out
 
     def display_season_player_stats(self):
         self.print_stats(*self.count_player_stats())
 
     @staticmethod
-    def print_stats(atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, steel_success, steel_failed, error):
-        print(f"{atbat}打数 {hit}安打 {walk}四球 {home_run}本塁打 {double}二塁打 {triple}三塁打 {gisei}犠牲フライ {getsu}併殺")
+    def print_stats(atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, steel_success, steel_failed, error, strike_out):
+        print(f"{atbat}打数 {hit}安打 {walk}四球 {home_run}本塁打 {double}二塁打 {triple}三塁打 {gisei}犠牲フライ {getsu}併殺 {strike_out}三振")
         steel_success_ratio = "{:.3f}".format(steel_success / (steel_success + steel_failed)) if steel_success + steel_failed != 0 else "-"
         print(f"打点:{rbi} 得点:{run} 盗塁:{steel_success} 盗塁死:{steel_failed} 盗塁成功率:{steel_success_ratio}")
         ave = "{:.3f}".format(hit / atbat)
@@ -66,6 +68,7 @@ class GameStats:
 
         # 投手として奪った数
         self.strike_out = 0
+        self.hit_allows = 0
         self.run_allows = 0
         self.walk_allows = 0
 

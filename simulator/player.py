@@ -42,8 +42,8 @@ class Player:
         self.steel_success_ratio: float = 0
         self.game_stats: GameStats = GameStats()
         self.season_stats: SeasonStats = SeasonStats()
-        self.super_fielding: float = 0
-        self.fielding: float = 0  # 1に近いほどエラーしづらい
+        self.super_fielding: float = 0.001  # 1に近いほどスーパープレーをする（大きすぎ注意）
+        self.fielding: float = 0.8  # 1に近いほどエラーしづらい
 
         # pitcher専用
         self.control = 0.5  # 0に近いほど四球確率が上がる。0.5を平均的なコントロールとする
@@ -74,6 +74,32 @@ class Player:
         plate_appear = self.at_bat + self.walk
         return single, plate_appear
 
+    def display_vs_pitcher_stats(self, pitcher):
+        normal_outs = self.at_bat - self.hit - self.strike_out
+        walk = int(self.walk * (1.0 - pitcher.control) / 0.5)
+        strike_out = int(self.strike_out * pitcher.doctor_k / 0.5)
+        hit = int(self.hit * (1.0 - pitcher.pitch_power) / 0.5)
+        double = int(self.double * (1.0 - pitcher.pitch_power) / 0.5)
+        triple = int(self.triple * (1.0 - pitcher.pitch_power) / 0.5)
+        homer = int(self.homer * (1.0 - pitcher.pitch_power) / 0.5)
+        goro_ok_out = self.goro_ok_out * pitcher.goro_fly_ratio / 0.5
+        goro_ng_out = self.goro_ng_out * pitcher.goro_fly_ratio / 0.5
+        fly_ok_out = self.fly_ok_out * (1.0 - pitcher.goro_fly_ratio) / 0.5
+        fly_ng_out = self.fly_ng_out * (1.0 - pitcher.goro_fly_ratio) / 0.5
+        plate_appear = strike_out + hit + walk + normal_outs
+        at_bat = plate_appear - walk
+        single = hit - double - triple - homer
+        print("###############")
+        print(f"{self.name}({self.position}) vs {pitcher.name}")
+        print("打率 {:.3f}".format(hit / at_bat))
+        print("出塁率 {:.3f}".format(obp := ((hit + walk) / plate_appear)))
+        print("長打率 {:.3f}".format(slg := ((single + double * 2 + triple * 3 + homer * 4) / at_bat)))
+        print("OPS {:.3f}".format(obp + slg))
+        mass = (goro_ng_out + goro_ok_out + fly_ng_out + fly_ok_out)
+        print(f"ゴロ/フライ {int((goro_ng_out + goro_ok_out) * 100/mass)}/{int((fly_ng_out + fly_ok_out) * 100/mass)}")
+        print("ホームラン率 {:.3f}".format(homer / at_bat), "三振率 {:.3f}".format(strike_out / at_bat))
+        print("盗塁企画率 {:.3f}".format(self.steel_try_ratio), "盗塁成功率 {:.3f}".format(self.steel_success_ratio))
+
     def display_original_stats(self, order=None):
         single, plate_appear = self.calc_atbat()
         print("###############")
@@ -94,6 +120,7 @@ class Player:
         print("###############")
         print(f"投手.{self.name}")
         print(f"{innings}回 {self.game_stats.strike_out}奪三振 {self.game_stats.walk_allows}四球 {self.game_stats.run_allows}失点")
+        print(f"{self.game_stats.error}エラー")
 
     def display_game_stats(self):
         print("###############")
@@ -110,17 +137,19 @@ class Player:
         self.season_stats.display_season_player_stats()
 
     def check_batting(self, pitcher) -> Play:
-        single, plate_appear = self.calc_atbat()
-        rand_result = randint(1, plate_appear)
-        walk = self.walk * (1.0 - pitcher.control) / 0.5
-        strike_out = self.strike_out * pitcher.doctor_k / 0.5
-        double = self.double * (1.0 - pitcher.pitch_power) / 0.5
-        triple = self.triple * (1.0 - pitcher.pitch_power) / 0.5
-        homer = self.homer * (1.0 - pitcher.pitch_power) / 0.5
+        normal_outs = self.at_bat - self.hit - self.strike_out
+        walk = int(self.walk * (1.0 - pitcher.control) / 0.5)
+        strike_out = int(self.strike_out * pitcher.doctor_k / 0.5)
+        hit = int(self.hit * (1.0 - pitcher.pitch_power) / 0.5)
+        double = int(self.double * (1.0 - pitcher.pitch_power) / 0.5)
+        triple = int(self.triple * (1.0 - pitcher.pitch_power) / 0.5)
+        homer = int(self.homer * (1.0 - pitcher.pitch_power) / 0.5)
         goro_ok_out = self.goro_ok_out * pitcher.goro_fly_ratio / 0.5
         goro_ng_out = self.goro_ng_out * pitcher.goro_fly_ratio / 0.5
         fly_ok_out = self.fly_ok_out * (1.0 - pitcher.goro_fly_ratio) / 0.5
         fly_ng_out = self.fly_ng_out * (1.0 - pitcher.goro_fly_ratio) / 0.5
+        plate_appear = strike_out + hit + walk + normal_outs
+        rand_result = randint(1, plate_appear)
         if rand_result <= strike_out:
             return Play.strike_out
         if rand_result <= strike_out + double:
@@ -147,11 +176,14 @@ class Team:
         self.name = name
         self.players = players
         self.pitcher = pitcher
+        self.win = 0
+        self.lose = 0
+        self.draw = 0
 
     def display_season_team_stats(self):
-        atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, steel_success, steel_failed, error = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, steel_success, steel_failed, error, strike_out = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         for batter in self.players:
-            _atbat, _walk, _hit, _single, _double, _triple, _home_run, _rbi, _run, _gisei, _getsu, _steel_success, _steel_failed, _error = batter.season_stats.count_player_stats()
+            _atbat, _walk, _hit, _single, _double, _triple, _home_run, _rbi, _run, _gisei, _getsu, _steel_success, _steel_failed, _error, _strike_out = batter.season_stats.count_player_stats()
             atbat += _atbat
             walk += _walk
             hit += _hit
@@ -163,8 +195,9 @@ class Team:
             run += _run
             gisei += _gisei
             getsu += _getsu
+            strike_out += _strike_out
             steel_success += _steel_success
             steel_failed += _steel_failed
             error += _error
         SeasonStats.print_stats(atbat, walk, hit, single, double, triple, home_run, rbi, run, gisei, getsu, steel_success,
-                         steel_failed, error)
+                         steel_failed, error, strike_out)

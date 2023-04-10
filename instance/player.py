@@ -35,9 +35,9 @@ class PlayerInstance:
         player.super_fielding = 0.01
         player.fielding = 0.99
 
-        player.control = 0.45
-        player.doctor_k = 0.9
-        player.pitch_power = 0.75
+        player.control = 0.4
+        player.doctor_k = 0.6
+        player.pitch_power = 0.55
         player.goro_fly_ratio = 0.5
         return player
 
@@ -329,15 +329,15 @@ class PlayerInstance:
         player.super_fielding = 0.02
         player.fielding = 0.99
 
-        player.control = 0.8
-        player.doctor_k = 0.8
-        player.pitch_power = 0.8
+        player.control = 0.6
+        player.doctor_k = 0.6
+        player.pitch_power = 0.58
         player.goro_fly_ratio = 0.6
         return player
 
     @staticmethod
-    def tanpopo(position):
-        player = Player("たんぽぽ", position)
+    def tanpopo(position, name="たんぽぽ"):
+        player = Player(name, position)
         player.at_bat = 5000
         player.hit = 150
         player.double = 20
@@ -351,8 +351,28 @@ class PlayerInstance:
         return player
 
     @staticmethod
-    def tempura(position):
-        player = Player("てんぷら", position)
+    def watage(position, name="わたげ"):
+        player = Player(name, position)
+        player.at_bat = 5000
+        player.hit = 150
+        player.double = 20
+        player.triple = 1
+        player.homer = 1
+        player.walk = 15
+        player.strike_out = 3600
+        player.setup_goro_fly_out(1, 90, 1, 8)
+        player.steel_try_ratio = 0.01
+        player.steel_success_ratio = 0.0
+
+        player.control = 0.2
+        player.doctor_k = 0.05
+        player.pitch_power = 0.2
+        player.goro_fly_ratio = 0.8
+        return player
+
+    @staticmethod
+    def tempura(position, name="てんぷら"):
+        player = Player(name, position)
         player.at_bat = 5000
         player.hit = 150
         player.double = 20
@@ -366,8 +386,8 @@ class PlayerInstance:
         return player
 
     @staticmethod
-    def banto_geinin(position):
-        player = Player("バント芸人", position)
+    def banto_geinin(position, name="バント芸人"):
+        player = Player(name, position)
         player.at_bat = 5000
         player.hit = 150
         player.double = 20
@@ -378,4 +398,253 @@ class PlayerInstance:
         player.setup_goro_fly_out(90, 1, 1, 8)
         player.steel_try_ratio = 0.01
         player.steel_success_ratio = 0.0
+        return player
+
+    @staticmethod
+    def konoe(position="一", name="近衛"):
+        player = Player(name, position)
+        player.at_bat = 500
+        player.hit = 150
+        player.double = 23
+        player.triple = 1
+        player.homer = 55
+        player.walk = 111
+        player.strike_out = 117
+        player.setup_goro_fly_out(3, 2, 4, 1)
+        player.steel_try_ratio = 0.03
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.01
+        player.fielding = 0.99
+        return player
+
+    @staticmethod
+    def maibara(position="二", name="米原"):
+        player = Player(name, position)
+        player.at_bat = 500
+        player.hit = 140
+        player.double = 34
+        player.triple = 6
+        player.homer = 30
+        player.walk = 60
+        player.strike_out = 60
+        player.setup_goro_fly_out(4, 1, 3, 2)
+        player.steel_try_ratio = 0.1
+        player.steel_success_ratio = 0.75
+        player.super_fielding = 0.05
+        player.fielding = 0.98
+        return player
+
+    @staticmethod
+    def miyazaki(position="遊", name="宮崎"):
+        player = Player(name, position)
+        player.at_bat = 450
+        player.hit = 120
+        player.double = 30
+        player.triple = 8
+        player.homer = 15
+        player.walk = 30
+        player.strike_out = 40
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.04
+        player.steel_success_ratio = 0.8
+        player.super_fielding = 0.04
+        player.fielding = 0.98
+        return player
+
+    @staticmethod
+    def kyoto(position="三", name="京都"):
+        player = Player(name, position)
+        player.at_bat = 500
+        player.hit = 130
+        player.double = 30
+        player.triple = 8
+        player.homer = 35
+        player.walk = 50
+        player.strike_out = 20
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.02
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.04
+        player.fielding = 0.99
+        return player
+
+    @staticmethod
+    def iwashiro(position="左", name="岩城"):
+        player = Player(name, position)
+        player.at_bat = 480
+        player.hit = 130
+        player.double = 30
+        player.triple = 8
+        player.homer = 22
+        player.walk = 30
+        player.strike_out = 40
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.03
+        player.steel_success_ratio = 0.8
+        player.super_fielding = 0.02
+        player.fielding = 0.99
+        return player
+
+    @staticmethod
+    def awaji(position="中", name="淡路"):
+        player = Player(name, position)
+        player.at_bat = 480
+        player.hit = 140
+        player.double = 36
+        player.triple = 5
+        player.homer = 45
+        player.walk = 120
+        player.strike_out = 90
+        player.setup_goro_fly_out(3, 2, 4, 1)
+        player.steel_try_ratio = 0.03
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.1
+        player.fielding = 0.99
+        return player
+
+    @staticmethod
+    def nagaoka(position="右", name="長岡"):
+        player = Player(name, position)
+        player.at_bat = 460
+        player.hit = 130
+        player.double = 30
+        player.triple = 8
+        player.homer = 22
+        player.walk = 30
+        player.strike_out = 40
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.1
+        player.steel_success_ratio = 0.7
+        player.super_fielding = 0.08
+        player.fielding = 0.97
+        return player
+
+    @staticmethod
+    def nagahama(position="捕", name="永濱"):
+        player = Player(name, position)
+        player.at_bat = 510
+        player.hit = 130
+        player.double = 30
+        player.triple = 8
+        player.homer = 22
+        player.walk = 30
+        player.strike_out = 40
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.03
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.01
+        player.fielding = 0.99
+        return player
+
+    @staticmethod
+    def nitta(position="DH", name="新田"):
+        player = Player(name, position)
+        player.at_bat = 460
+        player.hit = 130
+        player.double = 30
+        player.triple = 8
+        player.homer = 22
+        player.walk = 30
+        player.strike_out = 40
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.03
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.01
+        player.fielding = 0.99
+        return player
+
+    @staticmethod
+    def nagase(position="投", name="長瀬"):
+        player = Player(name, position)
+        player.super_fielding = 0.01
+        player.fielding = 0.99
+        player.control = 0.58
+        player.doctor_k = 0.57
+        player.pitch_power = 0.56
+        player.goro_fly_ratio = 0.5
+        return player
+
+    @staticmethod
+    def power_warrior(position, name):
+        player = Player(name, position)
+        player.at_bat = 400
+        player.hit = 110
+        player.double = 30
+        player.triple = 1
+        player.homer = 35
+        player.walk = 80
+        player.strike_out = 100
+        player.setup_goro_fly_out(2, 3, 4, 1)
+        player.steel_try_ratio = 0.01
+        player.steel_success_ratio = 0.4
+        player.super_fielding = 0.01
+        player.fielding = 0.95
+        return player
+
+    @staticmethod
+    def average_hitter(position, name):
+        player = Player(name, position)
+        player.at_bat = 400
+        player.hit = 140
+        player.double = 30
+        player.triple = 1
+        player.homer = 10
+        player.walk = 50
+        player.strike_out = 30
+        player.setup_goro_fly_out(2, 3, 3, 2)
+        player.steel_try_ratio = 0.03
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.01
+        player.fielding = 0.98
+        return player
+
+    @staticmethod
+    def speed_star(position, name):
+        player = Player(name, position)
+        player.at_bat = 400
+        player.hit = 105
+        player.double = 30
+        player.triple = 8
+        player.homer = 5
+        player.walk = 30
+        player.strike_out = 50
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.2
+        player.steel_success_ratio = 0.8
+        player.super_fielding = 0.05
+        player.fielding = 0.98
+        return player
+
+    @staticmethod
+    def diffence_star(position, name):
+        player = Player(name, position)
+        player.at_bat = 400
+        player.hit = 105
+        player.double = 30
+        player.triple = 2
+        player.homer = 3
+        player.walk = 30
+        player.strike_out = 50
+        player.setup_goro_fly_out(4, 1, 2, 3)
+        player.steel_try_ratio = 0.05
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.1
+        player.fielding = 0.999
+        return player
+
+    @staticmethod
+    def normal(position, name):
+        player = Player(name, position)
+        player.at_bat = 400
+        player.hit = 108
+        player.double = 25
+        player.triple = 2
+        player.homer = 5
+        player.walk = 40
+        player.strike_out = 60
+        player.setup_goro_fly_out(3, 2, 2, 3)
+        player.steel_try_ratio = 0.02
+        player.steel_success_ratio = 0.6
+        player.super_fielding = 0.02
+        player.fielding = 0.98
         return player

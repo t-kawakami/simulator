@@ -33,7 +33,7 @@ class GameSituation:
         print(f"|　|{'|'.join([str(i + 1).rjust(2) for i in range(end_inning)])}| H| E| S|")
         top_scores = '|'.join([self.print_board_score(i, end_inning) for i in self.inning_top_situations])
         top_hits = str(sum([i.hit_num for i in self.inning_top_situations])).rjust(2)
-        top_errors = str(sum([i.error_num for i in self.inning_top_situations])).rjust(2)
+        top_errors = str(sum([i.error_num for i in self.inning_bot_situations])).rjust(2)
         print(f"|{self.top_team.name[0]}|{top_scores}|{top_hits}|{top_errors}|{str(self.top_score).rjust(2)}|")
         bot_scores = '|'.join([self.print_board_score(i, end_inning) for i in self.inning_bot_situations])
         bot_hits = str(sum([i.hit_num for i in self.inning_bot_situations])).rjust(2)
@@ -56,7 +56,6 @@ class GameSituation:
         return f"{str(int(pitched_out / 3))}.{str(pitched_out % 3)}"
 
     def print_pitcher_results(self):
-
         self.top_team.pitcher.display_game_pitch_stats(self.count_inning_pitch(self.inning_bot_situations))
         self.bottom_team.pitcher.display_game_pitch_stats(self.count_inning_pitch(self.inning_top_situations))
 
@@ -210,6 +209,7 @@ class InningSituation:
 
     def occurred_single(self, position):
         self.atbat_player.game_stats.set_result(self.inning, position, "安打", False)
+        self.positions["投"].game_stats.hit_allows += 1
         self.hit_num += 1
         self.reset_count()
         if self.third_base:
@@ -227,6 +227,7 @@ class InningSituation:
 
     def occurred_double(self, position):
         self.atbat_player.game_stats.set_result(self.inning, position, "二塁打", False)
+        self.positions["投"].game_stats.hit_allows += 1
         self.hit_num += 1
         self.reset_count()
         if self.third_base:
@@ -247,6 +248,7 @@ class InningSituation:
 
     def occurred_triple(self, position):
         self.atbat_player.game_stats.set_result(self.inning, position, "三塁打", False)
+        self.positions["投"].game_stats.hit_allows += 1
         self.hit_num += 1
         self.reset_count()
         if self.third_base:
@@ -270,6 +272,7 @@ class InningSituation:
 
     def occurred_home_run(self, position):
         self.atbat_player.game_stats.set_result(self.inning, position, "本塁打", False)
+        self.positions["投"].game_stats.hit_allows += 1
         self.hit_num += 1
         self.reset_count()
         self.inning_score += 1
@@ -316,7 +319,7 @@ class InningSituation:
 
     def occurred_goro_positive_out(self, position, is_super):
         # 進塁できるゴロアウト。三塁ランナーいれば加点
-        self.atbat_player.game_stats.set_result(self.inning, position, "ゴロ", False)
+        self.atbat_player.game_stats.set_result(self.inning, position, "ゴロ", is_super)
         self.reset_count()
         self.out_count += 1
         if self.out_count >= 3:
